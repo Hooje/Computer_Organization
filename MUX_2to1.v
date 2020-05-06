@@ -1,5 +1,4 @@
-// Author: 0716003 鄒年城
-
+// Author: 0716003 鄒年城  0716079	藍世堯
 module MUX_2to1(
     data0_i,
     data1_i,

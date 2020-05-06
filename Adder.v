@@ -1,4 +1,4 @@
-// Author: 0716003 鄒年城
+// Author: 0716003 鄒年城  0716079	藍世堯
 module Adder(
     src1_i,
     src2_i,

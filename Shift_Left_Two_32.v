@@ -1,5 +1,4 @@
-// Author:
-
+// Author: 0716003 鄒年城  0716079	藍世堯
 module Shift_Left_Two_32(
     data_i,
     data_o
