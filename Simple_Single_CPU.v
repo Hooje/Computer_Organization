@@ -10,6 +10,7 @@ input         rst_i;
 //Internal Signles
 
 wire RegDst, RegWrite, branch, ALUSrc, zero, extend_choose;
+wire branch_judge;
 
 wire [32-1:0]	shifter_out;
 wire [2:0]		ALUOp;
@@ -32,6 +33,8 @@ reg	 [31:0]		Reg_current_program=32'd0;
 wire [31:0]		RsALU;
 wire [31:0]		ALUoutput;
 
+wire [31:0]		shamt;
+
 
 always @(current_program)begin
         Reg_current_program<=current_program;
@@ -49,7 +52,13 @@ Adder Adder1(
         .src2_i(32'd4),     
         .sum_o(next_address)
         );
-    
+
+Adder Adder2(
+	      .src1_i(next_address),     
+        .src2_i(extend_shift_two),     
+        .sum_o(address_after_adder)      
+        );
+   
 Instr_Memory IM(
         .pc_addr_i(now_address),  
         .instr_o(instruction)    
@@ -103,39 +112,51 @@ ALU ALU_unit(
         .zero_o(zero)
         );
         
-Adder Adder2(
-        .src1_i(next_address),     
-        .src2_i(extend_shift_two),     
-        .sum_o(address_after_adder)      
-        );
-        
-Shift_Left_Two_32 Shifter(
-        .data_i(extend),
-        .data_o(extend_shift_two)
-        );      
+Shift_Left_Two_32 Shifter01(
+       .data_i(extend),
+       .data_o(extend_shift_two)
+       );        
+
+Shifter_under Shifter02(
+			 .src1_i(RtALU),
+			 .src2_i(shamt),
+			 .ALUCtrl_i(ALUCtrl),
+			 .data_o(shifter_out)
+			 );
 
 
-MUX_2to1 #(.size(32)) Mux_PC_Source(
+
+
+
+MUX_2to1 #(.size(1)) MUX_bne_beq(
+				.data0_i(!zero),
+				.data1_i(zero),
+				.select_i(ALUOp[0]),
+				.data_o(branch_judge)
+				);
+
+MUX_2to1 #(.size(32)) Mux_PC_Src(			//mux for current program
         .data0_i(next_address),
         .data1_i(address_after_adder),
-        .select_i(branch&zero),
+        .select_i(branch&branch_judge),
         .data_o(current_program)
         );
 
-MUX_2to1 #(.size(32)) MUX_result_src(
+MUX_2to1 #(.size(32)) MUX_result_Src(
 				.data0_i(ALUoutput),
 				.data1_i(shifter_out),
 				.select_i(ALUCtrl[3]),
 				.data_o(result)
 				);
-/*
+
+//shamt input
 MUX_2to1 #(.size(32)) Mux_shamt_src(
-        .data0_i(RS),
-        .data1_i({27'b0,instruction[10:6]}),
-        .select_i(1'b0),  //temporary
-        .data_o()
+        .data0_i({27'b0,instruction[10:6]}),
+        .data1_i(RS),
+        .select_i(ALUCtrl[0]),  //temporary
+        .data_o(shamt)
         );
-*/
+
 MUX_2to1 #(.size(5)) Mux_Write_Reg(
         .data0_i(instruction[20:16]),
         .data1_i(instruction[15:11]),

@@ -27,17 +27,20 @@ always @(*) begin
 				6'b100100:ALUCtrl_o[3:0]<=4'b0000; //and
 				6'b100101:ALUCtrl_o[3:0]<=4'b0001; //or
 				6'b101010:ALUCtrl_o[3:0]<=4'b0111; //slt
-				6'b000011:ALUCtrl_o[3:0]<=4'b1000; //sra
-				6'b000111:ALUCtrl_o[3:0]<=4'b1000; //srav
+
+				6'b000011:ALUCtrl_o[3:0]<=4'b1110; //sra
+				6'b000111:ALUCtrl_o[3:0]<=4'b1111; //srav
 			endcase
 		end
 
 		3'b001:ALUCtrl_o[3:0]<=4'b0010; //addi
 		3'b010:ALUCtrl_o[3:0]<=4'b0111; //sltiu
-		3'b011:ALUCtrl_o[3:0]<=4'b0110; //beq
-		3'b100:ALUCtrl_o[3:0]<=4'b1001; //lui
+
+		3'b100:ALUCtrl_o[3:0]<=4'b1010; //lui
 		3'b101:ALUCtrl_o[3:0]<=4'b0001; //ori
-		3'b110:ALUCtrl_o[3:0]<=4'b1010; //bne
+
+		3'b011:ALUCtrl_o[3:0]<=4'b0110; //beq
+		3'b110:ALUCtrl_o[3:0]<=4'b0110; //bne
 	endcase
 end
 

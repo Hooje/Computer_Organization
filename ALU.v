@@ -69,7 +69,7 @@ module ALU(
 					A_invert <= 0;
 					B_invert <= 1;
 					operation <= 2'b10;
-					cin = 1;
+					cin <= 1;
 				end
 				4'b0111:begin //set less than
 					A_invert <= 0;

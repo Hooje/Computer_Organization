@@ -21,7 +21,7 @@ Simple_Single_CPU cpu(
 always #(`CYCLE_TIME/2) CLK = ~CLK;
 
 initial  begin
-		$readmemb("_CO_Lab2_test_data_beq.txt", cpu.IM.Instr_Mem);
+		$readmemb("_CO_Lab2_test_data_bne.txt", cpu.IM.Instr_Mem);
     $dumpfile("simple_cpu.vcd");
     $dumpvars(0, cpu);
 
