@@ -19,6 +19,7 @@ output [3-1:0] ALU_op_o;
 output         ALUSrc_o;
 output         RegDst_o;
 output         Branch_o;
+output				 Extend_mux;
 
 //Internal Signals
 reg    [3-1:0] ALU_op_o;
@@ -30,7 +31,9 @@ reg    		   Extend_mux;
 
 
 
-always @(*) begin
+always @(*) 
+begin
+
 	case(instr_op_i)
 		6'b000000:
 			begin
@@ -95,7 +98,7 @@ always @(*) begin
 				RegDst_o=0;
 				Branch_o=1;
 				Extend_mux=0;
-			end 
-
-
+			end
+	endcase
+end
 endmodule

@@ -8,25 +8,29 @@ input         clk_i;
 input         rst_i;
 
 //Internal Signles
+
 wire RegDst, RegWrite, branch, ALUSrc, zero, extend_choose;
-wire [2:0]ALUOp;
-wire [3:0]ALUCtrl;
-wire [4:0]Regwrite;
-wire [31:0]SignExtend;
-wire [31:0]ZeroExtend;
-wire [31:0]now_address;
-wire [31:0]next_address;
-wire [31:0]instruction;
-wire [31:0]RS;
-wire [31:0]RT;
-wire [31:0]RtALU;
-wire [31:0]extend;
-wire [31:0]extend_shift_two;
-wire [31:0]result;
-wire [31:0]address_after_adder;
-wire [31:0]current_program;
-reg [31:0]Reg_current_program=32'd0;
-wire [31:0]RsALU;
+
+wire [32-1:0]	shifter_out;
+wire [2:0]		ALUOp;
+wire [3:0]		ALUCtrl;
+wire [4:0]		RegDout;
+wire [31:0]		SignExtend;
+wire [31:0]		ZeroExtend;
+wire [31:0]		now_address;
+wire [31:0]		next_address;
+wire [31:0]		instruction;
+wire [31:0]		RS;
+wire [31:0]		RT;
+wire [31:0]		RtALU;
+wire [31:0]		extend;
+wire [31:0]		extend_shift_two;
+wire [31:0]		result;
+wire [31:0]		address_after_adder;
+wire [31:0]		current_program;
+reg	 [31:0]		Reg_current_program=32'd0;
+wire [31:0]		RsALU;
+wire [31:0]		ALUoutput;
 
 
 always @(current_program)begin
@@ -51,22 +55,16 @@ Instr_Memory IM(
         .instr_o(instruction)    
         );
 
-MUX_2to1 #(.size(5)) Mux_Write_Reg(
-        .data0_i(instruction[20:16]),
-        .data1_i(instruction[15:11]),
-        .select_i(RegDst),
-        .data_o(Regwrite)
-        );
         
 Reg_File RF(
         .clk_i(clk_i),      
         .rst_i(rst_i) ,     
         .RSaddr_i(instruction[25:21]) ,  
         .RTaddr_i(instruction[20:16]) ,  
-        .RDaddr_i(Regwrite) ,  
+        .RDaddr_i(RegDout),  
         .RDdata_i(result)  , 
         .RegWrite_i (RegWrite),
-        .RSdata_o(RS) ,
+        .RSdata_o(RS),
         .RTdata_o(RT)   
         );
     
@@ -77,7 +75,7 @@ Decoder Decoder(
         .ALUSrc_o(ALUSrc),   
         .RegDst_o(RegDst),
         .Branch_o(branch),
-        .ZeroExt_o(extend_choose)  //here
+        .Extend_mux(extend_choose)  //here
         );
 
 ALU_Ctrl AC(  //notice sra
@@ -97,33 +95,11 @@ Zero_filled Zf(
         );
 
 
-MUX_2to1 #(.size(32)) Mux_Extend(
-        .data0_i(SignExtend),
-        .data1_i(ZeroExtend),
-        .select_i(extend_choose),
-        .data_o(extend)
-        );
-
-/*
-MUX_2to1 #(.size(32)) Mux_ALUSrc2(
-        .data0_i(RS),
-        .data1_i({27'b0,instruction[10:6]}),
-        .select_i(ALUSrc2),
-        .data_o(RsALU)
-        );
-*/
-MUX_2to1 #(.size(32)) Mux_ALUSrc(
-        .data0_i(RT),
-        .data1_i(extend),
-        .select_i(ALUSrc),
-        .data_o(RtALU)
-        );
-        
-ALU ALU(
-        .src1_i(RsALU),
+ALU ALU_unit(
+        .src1_i(RS),
         .src2_i(RtALU),
         .ctrl_i(ALUCtrl),
-        .result_o(result),
+        .result_o(ALUoutput),
         .zero_o(zero)
         );
         
@@ -137,12 +113,49 @@ Shift_Left_Two_32 Shifter(
         .data_i(extend),
         .data_o(extend_shift_two)
         );      
-        
+
+
 MUX_2to1 #(.size(32)) Mux_PC_Source(
         .data0_i(next_address),
         .data1_i(address_after_adder),
         .select_i(branch&zero),
         .data_o(current_program)
-        );  
+        );
+
+MUX_2to1 #(.size(32)) MUX_result_src(
+				.data0_i(ALUoutput),
+				.data1_i(shifter_out),
+				.select_i(ALUCtrl[3]),
+				.data_o(result)
+				);
+/*
+MUX_2to1 #(.size(32)) Mux_shamt_src(
+        .data0_i(RS),
+        .data1_i({27'b0,instruction[10:6]}),
+        .select_i(1'b0),  //temporary
+        .data_o()
+        );
+*/
+MUX_2to1 #(.size(5)) Mux_Write_Reg(
+        .data0_i(instruction[20:16]),
+        .data1_i(instruction[15:11]),
+        .select_i(RegDst),
+        .data_o(RegDout)
+        );
+
+MUX_2to1 #(.size(32)) Mux_Extend(
+        .data0_i(SignExtend),
+        .data1_i(ZeroExtend),
+        .select_i(extend_choose),
+        .data_o(extend)
+        );
+
+MUX_2to1 #(.size(32)) Mux_ALUSrc(
+        .data0_i(RT),
+        .data1_i(extend),
+        .select_i(ALUSrc),
+        .data_o(RtALU)
+        );
+        
 
 endmodule
