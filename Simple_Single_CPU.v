@@ -1,3 +1,4 @@
+// Author: 0716003 鄒年城  0716079 藍世堯
 module Simple_Single_CPU(
         clk_i,
         rst_i

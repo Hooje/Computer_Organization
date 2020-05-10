@@ -1,3 +1,4 @@
+// Author: 0716003 鄒年城  0716079 藍世堯
 `define CYCLE_TIME 10
 `define END_COUNT 5
 module TestBench;

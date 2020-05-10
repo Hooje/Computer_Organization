@@ -1,3 +1,4 @@
+// Author: 0716003 鄒年城  0716079	藍世堯
 module Shifter(
 				data_i,
 				data_o,

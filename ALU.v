@@ -1,3 +1,4 @@
+// Author: 0716003 鄒年城  0716079	藍世堯
 module ALU(
            src1_i,          // 32 bits source 1          (input)
            src2_i,          // 32 bits source 2          (input)
