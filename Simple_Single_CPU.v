@@ -109,6 +109,7 @@ ALU ALU_unit(
         .src1_i(RS),
         .src2_i(RtALU),
         .ctrl_i(ALUCtrl),
+        .ALUOp_i(ALUOp), 
         .result_o(ALUoutput),
         .zero_o(zero)
         );
