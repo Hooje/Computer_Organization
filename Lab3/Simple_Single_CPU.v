@@ -28,7 +28,7 @@ wire [31:0]		RtALU;
 wire [31:0]		extend;
 wire [31:0]		extend_shift_two;
 wire [31:0]		result;
-wire [31:0]		address_after_adder;
+wire [31:0]		branch_address;
 wire [31:0]		current_program;
 reg	 [31:0]		Reg_current_program=32'd0;
 wire [31:0]		RsALU;
@@ -57,7 +57,7 @@ Adder Adder1(
 Adder Adder2(
 	      .src1_i(next_address),     
         .src2_i(extend_shift_two),     
-        .sum_o(address_after_adder)      
+        .sum_o(branch_address)      
         );
    
 Instr_Memory IM(
@@ -141,8 +141,8 @@ jr_or_not jr(
 
 MUX_4to1 #(.size(1)) Branch_mux(
         .data0_i(zero),  //beq 
-        .data1_i(result[31]|zero), //blez   小於等於0
-        .data2_i(!result[31]),      //bgtz  大於0
+        .data1_i(result[31]||zero), //blez   小於等於0
+        .data2_i(!result[31]&&(!zero)),      //bgtz  大於0
         .data3_i(!zero),       // bne
         .select_i(BranchType),  
         .data_o(branch_judge)
@@ -198,9 +198,9 @@ MUX_2to1 #(.size(1)) MUX_bne_beq(
 				);
 */
 
-MUX_2to1 #(.size(32)) Mux_PC_Src(			//mux for current program
+MUX_2to1 #(.size(32)) Mux_branch_type(			//mux for current program
         .data0_i(next_address),
-        .data1_i(address_after_adder),
+        .data1_i(branch_address),
         .select_i(branch&branch_judge),
         .data_o(branch_select_pc_or_not)  // branch selct pc or not
         );
