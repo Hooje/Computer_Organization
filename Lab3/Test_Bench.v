@@ -1,5 +1,5 @@
 `define CYCLE_TIME 10
-`define END_COUNT 500
+`define END_COUNT 600
 module TestBench;
 
 //Internal Signals
@@ -19,7 +19,7 @@ Simple_Single_CPU cpu(
 always #(`CYCLE_TIME/2) CLK = ~CLK;
 
 initial  begin
-    $readmemb("_CO_Lab3_test_data_bubble_sll.txt", cpu.IM.Instr_Mem);
+    $readmemb("_CO_Lab3_test_data_jal.txt", cpu.IM.Instr_Mem);
     $dumpfile("lab3_cpu.vcd");
     $dumpvars(0, cpu);
 

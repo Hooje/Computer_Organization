@@ -22,10 +22,10 @@ reg   [32-1:0] data_o;
 always @(*) begin
 	case(ALUCtrl_i)
 
-		4'b1110:data_o =$signed(src1_i)>>>src2_i;
-		4'b1111:data_o =$signed(src1_i)>>>src2_i;
-		4'b1010:data_o = src1_i<<16;
-
+		4'b1110:data_o =$signed(src1_i)>>>src2_i;		//sra
+		4'b1111:data_o =$signed(src1_i)>>>src2_i;		//srav
+		4'b1010:data_o = src1_i<<16;								//lui
+		4'b1011:data_o = src1_i<<src2_i;						//sll
 		default data_o=0;
 		
 	endcase
