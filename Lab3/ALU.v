@@ -20,7 +20,6 @@ module ALU(
 
 always@(*)
 	begin
-			zero_o <= (!result_o);
 			case(ctrl_i)
 				4'b0000:begin //bitwise AND
 					result_o = src1_i & src2_i;
