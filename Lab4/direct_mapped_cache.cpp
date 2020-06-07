@@ -79,7 +79,7 @@ int main()
 		{
 			for(int block=16; block<=256; block*=2)
 			{
-				simulate(file[i],cache * K, block);
+				simulate(file[i], cache * K, block);
 			}
 			cout<<endl<<"---------------------------"<<endl<<endl;
 		}
