@@ -1,0 +1,190 @@
+ICACHE.txt
+
+cache line: 256
+clock_size  block_size  4096  16
+miss ratio: 0.0217096
+
+cache line: 128
+clock_size  block_size  4096  32
+miss ratio: 0.0108548
+
+cache line: 64
+clock_size  block_size  4096  64
+miss ratio: 0.00542741
+
+cache line: 32
+clock_size  block_size  4096  128
+miss ratio: 0.0027137
+
+cache line: 16
+clock_size  block_size  4096  256
+miss ratio: 0.00135685
+
+
+---------------------------
+
+cache line: 1024
+clock_size  block_size  16384  16
+miss ratio: 0.0217096
+
+cache line: 512
+clock_size  block_size  16384  32
+miss ratio: 0.0108548
+
+cache line: 256
+clock_size  block_size  16384  64
+miss ratio: 0.00542741
+
+cache line: 128
+clock_size  block_size  16384  128
+miss ratio: 0.0027137
+
+cache line: 64
+clock_size  block_size  16384  256
+miss ratio: 0.00135685
+
+
+---------------------------
+
+cache line: 4096
+clock_size  block_size  65536  16
+miss ratio: 0.0217096
+
+cache line: 2048
+clock_size  block_size  65536  32
+miss ratio: 0.0108548
+
+cache line: 1024
+clock_size  block_size  65536  64
+miss ratio: 0.00542741
+
+cache line: 512
+clock_size  block_size  65536  128
+miss ratio: 0.0027137
+
+cache line: 256
+clock_size  block_size  65536  256
+miss ratio: 0.00135685
+
+
+---------------------------
+
+cache line: 16384
+clock_size  block_size  262144  16
+miss ratio: 0.0217096
+
+cache line: 8192
+clock_size  block_size  262144  32
+miss ratio: 0.0108548
+
+cache line: 4096
+clock_size  block_size  262144  64
+miss ratio: 0.00542741
+
+cache line: 2048
+clock_size  block_size  262144  128
+miss ratio: 0.0027137
+
+cache line: 1024
+clock_size  block_size  262144  256
+miss ratio: 0.00135685
+
+
+---------------------------
+
+
+DCACHE.txt
+
+cache line: 256
+clock_size  block_size  4096  16
+miss ratio: 0.0555556
+
+cache line: 128
+clock_size  block_size  4096  32
+miss ratio: 0.031746
+
+cache line: 64
+clock_size  block_size  4096  64
+miss ratio: 0.015873
+
+cache line: 32
+clock_size  block_size  4096  128
+miss ratio: 0.00793651
+
+cache line: 16
+clock_size  block_size  4096  256
+miss ratio: 0.00793651
+
+
+---------------------------
+
+cache line: 1024
+clock_size  block_size  16384  16
+miss ratio: 0.0555556
+
+cache line: 512
+clock_size  block_size  16384  32
+miss ratio: 0.031746
+
+cache line: 256
+clock_size  block_size  16384  64
+miss ratio: 0.015873
+
+cache line: 128
+clock_size  block_size  16384  128
+miss ratio: 0.00793651
+
+cache line: 64
+clock_size  block_size  16384  256
+miss ratio: 0.00793651
+
+
+---------------------------
+
+cache line: 4096
+clock_size  block_size  65536  16
+miss ratio: 0.0555556
+
+cache line: 2048
+clock_size  block_size  65536  32
+miss ratio: 0.031746
+
+cache line: 1024
+clock_size  block_size  65536  64
+miss ratio: 0.015873
+
+cache line: 512
+clock_size  block_size  65536  128
+miss ratio: 0.00793651
+
+cache line: 256
+clock_size  block_size  65536  256
+miss ratio: 0.00793651
+
+
+---------------------------
+
+cache line: 16384
+clock_size  block_size  262144  16
+miss ratio: 0.0555556
+
+cache line: 8192
+clock_size  block_size  262144  32
+miss ratio: 0.031746
+
+cache line: 4096
+clock_size  block_size  262144  64
+miss ratio: 0.015873
+
+cache line: 2048
+clock_size  block_size  262144  128
+miss ratio: 0.00793651
+
+cache line: 1024
+clock_size  block_size  262144  256
+miss ratio: 0.00793651
+
+
+---------------------------
+
+
