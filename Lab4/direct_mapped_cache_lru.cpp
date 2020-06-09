@@ -89,14 +89,14 @@ void simulate(char *file,int cache_size, int block_size,int way)
 	int index_bit = (int)log2(cache_size / block_size);	
 	int line = cache_size >> (offset_bit);							//line is number of blocks
 	
-	int shamt = offset_bit + (int) log2(way);
 	int set_num = line / way;
+	int set_bit = log2(set_num);
 	bool judge;
 
 	cache_content **cache = new cache_content*[set_num];
 	cout << "cache line: " << line << endl;
-	//printf("shamt: %d\n", shamt);
-	//printf("offet_bit: %d | index_bit: %d | shamt: %d\n",offset_bit,index_bit,shamt); 	
+	
+	//printf("offet_bit: %d | index_bit: %d\n",offset_bit,index_bit); 	
 	for(int i=0;i<set_num;i++)
 	{
 		cache[i]=new cache_content[way];
@@ -113,14 +113,14 @@ void simulate(char *file,int cache_size, int block_size,int way)
 		total_num++;
 		//cout << hex << x << " ";
 		index = (x >> offset_bit) & (set_num - 1);
-		tag = x >> (index_bit + offset_bit);
+		tag = x >> (set_bit + offset_bit);
 
 		judge = insert_cache(cache[index], tag, way);
 
 		if(judge == false)
 			miss_num++;
 	}
-
+	
 	printf("cache_size: %d | set_num: %d | way: %d\n",cache_size,set_num,way);
 	cout<<"miss ratio: "<<(float)miss_num/(float)total_num<<endl<<endl;
 	fclose(fp);
