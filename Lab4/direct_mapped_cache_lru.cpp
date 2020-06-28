@@ -66,8 +66,10 @@ bool insert_cache(cache_content *set, unsigned int tag, int way)
 		if(set[i].tag == tag)
 		{
 			temp = set[i];
-			for(j=i; j>=1; j--)
-				set[j] = set[j-1];
+			for(j=i; j>=1; j--){
+				set[j].tag = set[j-1].tag;
+				set[j].v = set[j-1].v;
+			}
 			set[0] = temp;
 			return true;
 		}
@@ -75,8 +77,10 @@ bool insert_cache(cache_content *set, unsigned int tag, int way)
 	
 	if(valid == way){	//condition of full
 	
-		for(j = way - 1; j >= 1; j--)
-			set[j] = set[j-1];
+		for(j = way - 1; j >= 1; j--){
+			set[j].tag = set[j-1].tag;
+			set[j].v = set[j-1].v;
+		}
 
 		set[0].tag = tag;
 		set[0].v = true;
@@ -85,8 +89,10 @@ bool insert_cache(cache_content *set, unsigned int tag, int way)
 		
 	}else{	//condition of not full
 		
-		for(j = valid; j >= 1; j--)
-			set[j] = set[j-1];
+		for(j = valid; j >= 1; j--){
+			set[j].tag = set[j-1].tag;
+			set[j].v = set[j-1].v;
+		}
 
 		set[0].tag = tag;
 		set[0].v = true;
