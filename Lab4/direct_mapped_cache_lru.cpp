@@ -5,25 +5,7 @@
 
 using namespace std;
 
-int A[1024][1024]={0}
-int B[1024][1024]={0}
-int C[1024][1024]={0}
-int m, n, p;
-void multi()
-{
-	for (int i = 0; i < m; ++i)
-	{
-		for (int j = 0; j < p; ++j)
-		{
-			C[i][j]=0;
-			for (int k = 0; k < n; ++k)
-			{
-				C[i][j]+=(A[i][k]*B[k][j]);
-			}
-			
-		}
-	}
-}
+
 struct cache_content
 {
 	bool v;
@@ -136,7 +118,7 @@ void simulate(char *file,int cache_size, int block_size,int way)
 	while(fscanf(fp, "%x", &x) != EOF)
   {
 		total_num++;
-		//cout << hex << x << " ";
+		cout << x << endl;
 		index = (x >> offset_bit) & (set_num - 1);
 		tag = x >> (set_bit + offset_bit);
 

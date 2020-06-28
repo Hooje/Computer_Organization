@@ -8,8 +8,12 @@ using namespace std;
 int A[1024][1024]={0};
 int B[1024][1024]={0};
 int C[1024][1024]={0};
+unsigned int a[1024][1024];
+unsigned int b[1024][1024];
+unsigned int c[1024][1024];
+
 int m, n, p;
-int address_A, address_B, address_C;
+unsigned int address_A, address_B, address_C;
 
 struct cache_content
 {
@@ -170,6 +174,28 @@ void print(){
 
 }
 
+void address_init(){
+	a[0][0] = address_A;
+	b[0][0] = address_B;
+	int i, j;
+	for(j=1; j<n; j++)
+		a[0][j] = a[0][j-1] + 4;
+	for(i=1; i<m; i++){
+		a[i][0] = a[i-1][n-1] + 4;
+		for(j=1; j<n; j++){
+			a[i][j] = a[i][j-1] + 4;
+		}
+	}
+	
+	for(j=1; j<p; j++)
+		b[0][j] = b[0][j-1] + 4;
+	for(i=1; i<n; i++){
+		b[i][0] = b[i-1][p-1] + 4;
+		for(j=1; j<p; j++){
+			b[i][j] = b[i][j-1] + 4;
+		}
+	}
+}
 
 int main(int argc, char *argv[])
 {
@@ -191,12 +217,14 @@ int main(int argc, char *argv[])
 			fscanf(fp, "%d", &A[i][j]);
 		}
 	}
-
+	
 	for(i = 0; i < n; i++){
 		for(j = 0; j < p; j++){
 			fscanf(fp, "%d", &B[i][j]);
 		}
 	}
+	
+	address_init();
 
 	//array multiplication
 	for (i = 0; i < m; ++i)
