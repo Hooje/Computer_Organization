@@ -5,6 +5,25 @@
 
 using namespace std;
 
+int A[1024][1024]={0}
+int B[1024][1024]={0}
+int C[1024][1024]={0}
+int m, n, p;
+void multi()
+{
+	for (int i = 0; i < m; ++i)
+	{
+		for (int j = 0; j < p; ++j)
+		{
+			C[i][j]=0;
+			for (int k = 0; k < n; ++k)
+			{
+				C[i][j]+=(A[i][k]*B[k][j]);
+			}
+			
+		}
+	}
+}
 struct cache_content
 {
 	bool v;
