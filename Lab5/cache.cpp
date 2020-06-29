@@ -8,12 +8,65 @@ using namespace std;
 int A[1024][1024]={0};
 int B[1024][1024]={0};
 int C[1024][1024]={0};
-unsigned int a[1024][1024];
-unsigned int b[1024][1024];
+long long a[1024][1024];
+long long b[1024][1024];
 unsigned int c[1024][1024];
 
+const int K = 1024;
 int m, n, p;
-unsigned int address_A, address_B, address_C;
+long long address_A, address_B, address_C;
+
+void print(){
+	int i, j;
+	printf("(%lld,%lld,%lld)\n",address_A,address_B,address_C);
+	printf("(%d,%d,%d)\n", m, n, p);
+	printf("\narray A:\n");
+	for(i=0; i<m; i++){
+		for(j=0; j<n; j++){
+			printf(" %lld", a[i][j]);
+		}
+		printf("\n");
+	}
+	printf("\narray B:\n");
+	for(i=0; i<n; i++){
+		for(j=0; j<p; j++){
+			printf(" %lld", b[i][j]);
+		}
+		printf("\n");
+	}
+	printf("\narray C:\n");
+	for(i=0; i<m; i++){
+		for(j=0; j<p; j++){
+			printf(" %d", C[i][j]);
+		}
+		printf("\n");
+	}
+
+}
+
+void address_init(){
+	a[0][0] = address_A;
+	b[0][0] = address_B;
+	int i, j;
+	for(j=1; j<n; j++)
+		a[0][j] = a[0][j-1] + 4;
+	for(i=1; i<m; i++){
+		a[i][0] = a[i-1][n-1] + 4;
+		for(j=1; j<n; j++){
+			a[i][j] = a[i][j-1] + 4;
+		}
+	}
+	
+	for(j=1; j<p; j++)
+		b[0][j] = b[0][j-1] + 4;
+	for(i=1; i<n; i++){
+		b[i][0] = b[i-1][p-1] + 4;
+		for(j=1; j<p; j++){
+			b[i][j] = b[i][j-1] + 4;
+		}
+	}
+}
+
 
 struct cache_content
 {
@@ -22,7 +75,6 @@ struct cache_content
     // unsigned int	data[16];
 };
 
-const int K = 1024;
 
 double log2(double n)
 {  
@@ -94,7 +146,7 @@ bool insert_cache(cache_content *set, unsigned int tag, int way)
 }
 
 
-void simulate(char *file,int cache_size, int block_size,int way)
+void simulate(int cache_size, int block_size,int way)
 {
 	unsigned int tag, index, x;
 
@@ -146,70 +198,22 @@ void simulate(char *file,int cache_size, int block_size,int way)
 	delete [] cache;
 }
 
-void print(){
-	int i, j;
-	printf("(%x,%x,%x)\n",address_A,address_B,address_C);
-	printf("(%d,%d,%d)\n", m, n, p);
-	printf("\narray A:\n");
-	for(i=0; i<m; i++){
-		for(j=0; j<n; j++){
-			printf(" %d", A[i][j]);
-		}
-		printf("\n");
-	}
-	printf("\narray B:\n");
-	for(i=0; i<n; i++){
-		for(j=0; j<p; j++){
-			printf(" %d", B[i][j]);
-		}
-		printf("\n");
-	}
-	printf("\narray C:\n");
-	for(i=0; i<m; i++){
-		for(j=0; j<p; j++){
-			printf(" %d", C[i][j]);
-		}
-		printf("\n");
-	}
 
-}
 
-void address_init(){
-	a[0][0] = address_A;
-	b[0][0] = address_B;
-	int i, j;
-	for(j=1; j<n; j++)
-		a[0][j] = a[0][j-1] + 4;
-	for(i=1; i<m; i++){
-		a[i][0] = a[i-1][n-1] + 4;
-		for(j=1; j<n; j++){
-			a[i][j] = a[i][j-1] + 4;
-		}
-	}
-	
-	for(j=1; j<p; j++)
-		b[0][j] = b[0][j-1] + 4;
-	for(i=1; i<n; i++){
-		b[i][0] = b[i-1][p-1] + 4;
-		for(j=1; j<p; j++){
-			b[i][j] = b[i][j-1] + 4;
-		}
-	}
-}
 
 int main(int argc, char *argv[])
 {
-	// Let us simulate 4KB cache with 16B blocks
-	//simulate(4 * K, 16);
 	char *input;
 	char *output;
 	input = argv[1];
 	output = argv[2];
 
 	int i, j, k;
+	long long programCycles, oneWordWideCycles,
+						widerMemoryCycles, twoLevelMemoryCycles;
 
 	FILE *fp = fopen(input, "r");		// read file
-	fscanf(fp, "%x %x %x", &address_A, &address_B, &address_C);
+	fscanf(fp, "%llx %llx %llx", &address_A, &address_B, &address_C);
 	fscanf(fp, "%d %d %d", &m, &n, &p);
 	
 	for(i = 0; i < m; i++){
@@ -223,7 +227,7 @@ int main(int argc, char *argv[])
 			fscanf(fp, "%d", &B[i][j]);
 		}
 	}
-	
+
 	address_init();
 
 	//array multiplication
@@ -239,28 +243,15 @@ int main(int argc, char *argv[])
 			
 		}
 	}
-
+	
 	print();
-		
-	int cache_size, block_size;
 
-	////////////這裡之後可改呈現方式
-	//simulate(file[0], 4 * K, 64, 4);
+	programCycles = 2 + 2*(m+1) + m + 2*m*(p+1) + m*p
+									+ 2*(n+1)*m*p + 20*m*n*p + 2*m*p + 2*m;  // add 1 ??
 	
-	/*
-	for(int i=0;i<2;i++)
-	{
-		cout<<file[i]<<endl<<endl;
-		for(int cache=4; cache<=256; cache *= 4)
-		{
-			for(int way=1; way<=64; way = way * 2)
-			{
-				simulate(file[i],cache * K, 64, way);
-			}
-			cout<<endl<<"---------------------------"<<endl<<endl;
-		}
-		cout<<endl;
-	}*/
-	
+	printf("%lld\n", programCycles);
+		
+	int cache_size, block_size;	
+		
 	return 0;
 }
