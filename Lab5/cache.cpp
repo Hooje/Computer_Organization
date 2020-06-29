@@ -41,13 +41,14 @@ void print(){
 		}
 		printf("\n");
 	}
-
 }
 
 void address_init(){
+
 	a[0][0] = address_A;
 	b[0][0] = address_B;
 	int i, j;
+
 	for(j=1; j<n; j++)
 		a[0][j] = a[0][j-1] + 4;
 	for(i=1; i<m; i++){
@@ -75,13 +76,11 @@ struct cache_content
     // unsigned int	data[16];
 };
 
-
 double log2(double n)
 {  
     // log(n) / log(2) is log2.
     return log(n) / log(double(2));
 }
-
 
 int usable_cache(cache_content *set, int way)
 {
@@ -96,7 +95,7 @@ int usable_cache(cache_content *set, int way)
 	return i;
 }
 
-// true for hit, false for miss
+// LRU  true for hit, false for miss 
 bool insert_cache(cache_content *set, unsigned int tag, int way)
 {	
 	int valid, i, j;
@@ -146,13 +145,18 @@ bool insert_cache(cache_content *set, unsigned int tag, int way)
 }
 
 
-void simulate(int cache_size, int block_size,int way)
+long long oneWordWideSimulation()
 {
+	long long stall;
+	int hit = 1 + 2 + 1;
+	int miss = 1 + 2 + 1 + 1 + 100 + 1;
+	int cache_size = 512;
+	int block_size = 32;	// 8 words
+	int way = 8; // 8-way set-associative caches
+	int i, j, k;
+
 	unsigned int tag, index, x;
-
-	int total_num=0;
-	int miss_num=0;
-
+	
 	int offset_bit = (int)log2(block_size);
 	int index_bit = (int)log2(cache_size / block_size);	
 	int line = cache_size >> (offset_bit);							//line is number of blocks
@@ -162,9 +166,11 @@ void simulate(int cache_size, int block_size,int way)
 	bool judge;
 
 	cache_content **cache = new cache_content*[set_num];
-	cout << "cache line: " << line << endl;
-	
-	//printf("offet_bit: %d | index_bit: %d\n",offset_bit,index_bit); 	
+
+	/*cout << "cache line: " << line << endl;
+	printf("cache_size: %d | set_num: %d | way: %d\n",cache_size,set_num,way);
+	printf("offet_bit: %d | index_bit: %d\n",offset_bit,index_bit);*/
+
 	for(int i=0;i<set_num;i++)
 	{
 		cache[i]=new cache_content[way];
@@ -173,29 +179,45 @@ void simulate(int cache_size, int block_size,int way)
 			cache[i][j].v=0;
 		}
 	}
-	
-  FILE *fp = fopen(file, "r");  // read file
-	
-	while(fscanf(fp, "%x", &x) != EOF)
-  {
-		total_num++;
-		//cout << hex << x << " ";
-		index = (x >> offset_bit) & (set_num - 1);
-		tag = x >> (set_bit + offset_bit);
 
-		judge = insert_cache(cache[index], tag, way);
+	//multiplication simulation
+	for (i = 0; i < m; ++i)
+	{
+		for (j = 0; j < p; ++j)
+		{
+			for (k = 0; k < n; ++k)
+			{	
+				index = (c[i][j] >> offset_bit) & (set_num - 1); //lw
+				judge = insert_cache(cache[index],c[i][j],way);
+				stall += judge ? hit : miss;
 
-		if(judge == false)
-			miss_num++;
+				index = (a[i][k] >> offset_bit) & (set_num - 1); //lw
+				judge = insert_cache(cache[index],a[i][k],way);
+				stall += judge ? hit : miss;
+
+				index = (b[k][j] >> offset_bit) & (set_num - 1); //lw
+				judge = insert_cache(cache[index],b[k][j],way);
+				stall += judge ? hit : miss;
+
+				index = (c[i][j] >> offset_bit) & (set_num - 1); //sw
+				judge = insert_cache(cache[index],c[i][j],way);
+				stall += judge ? hit : miss;
+
+				//C[i][j]+=(A[i][k]*B[k][j]);
+			}
+		}
 	}
-	
-	printf("cache_size: %d | set_num: %d | way: %d\n",cache_size,set_num,way);
-	cout<<"miss ratio: "<<(float)miss_num/(float)total_num<<endl<<endl;
-	fclose(fp);
+
+		//cout << hex << x << " ";
+		//index = (x >> offset_bit) & (set_num - 1);
+		//tag = x >> (set_bit + offset_bit);
+		//judge = insert_cache(cache[index], tag, way);
 
 	for(int i=0;i<set_num;i++)
 		delete [] cache[i];
 	delete [] cache;
+
+	return stall;
 }
 
 
@@ -248,10 +270,10 @@ int main(int argc, char *argv[])
 
 	programCycles = 2 + 2*(m+1) + m + 2*m*(p+1) + m*p
 									+ 2*(n+1)*m*p + 20*m*n*p + 2*m*p + 2*m;  // add 1 ??
+
+	oneWordWideCycles = oneWordWideSimulation();
 	
-	printf("%lld\n", programCycles);
-		
-	int cache_size, block_size;	
+	printf("%lld %lld\n", programCycles, oneWordWideCycles);
 		
 	return 0;
 }
