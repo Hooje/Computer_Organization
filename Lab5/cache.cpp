@@ -72,7 +72,7 @@ void address_init(){
 struct cache_content
 {
 	bool v;
-	unsigned int tag;
+	long long tag;
     // unsigned int	data[16];
 };
 
@@ -96,7 +96,7 @@ int usable_cache(cache_content *set, int way)
 }
 
 // LRU  true for hit, false for miss 
-bool insert_cache(cache_content *set, unsigned int tag, int way)
+bool insert_cache(cache_content *set, long long tag, int way)
 {	
 	int valid, i, j;
 	cache_content temp;
@@ -147,15 +147,15 @@ bool insert_cache(cache_content *set, unsigned int tag, int way)
 
 long long oneWordWideSimulation()
 {
-	long long stall;
+	long long stall = 0;
 	int hit = 1 + 2 + 1;
-	int miss = 1 + 2 + 1 + 1 + 100 + 1;
+	int miss = 8 * (1 + 2 + 1 + 1 + 100 + 1 + 2);
 	int cache_size = 512;
 	int block_size = 32;	// 8 words
 	int way = 8; // 8-way set-associative caches
 	int i, j, k;
 
-	unsigned int tag, index, x;
+	long long tag, index;
 	
 	int offset_bit = (int)log2(block_size);
 	int index_bit = (int)log2(cache_size / block_size);	
@@ -165,11 +165,11 @@ long long oneWordWideSimulation()
 	int set_bit = log2(set_num);
 	bool judge;
 
-	cache_content **cache = new cache_content*[set_num];
-
 	/*cout << "cache line: " << line << endl;
 	printf("cache_size: %d | set_num: %d | way: %d\n",cache_size,set_num,way);
 	printf("offet_bit: %d | index_bit: %d\n",offset_bit,index_bit);*/
+
+	cache_content **cache = new cache_content*[set_num];
 
 	for(int i=0;i<set_num;i++)
 	{
@@ -188,19 +188,23 @@ long long oneWordWideSimulation()
 			for (k = 0; k < n; ++k)
 			{	
 				index = (c[i][j] >> offset_bit) & (set_num - 1); //lw
-				judge = insert_cache(cache[index],c[i][j],way);
+				tag = c[i][j] >> (set_bit + offset_bit);
+				judge = insert_cache(cache[index],tag,way);
 				stall += judge ? hit : miss;
 
 				index = (a[i][k] >> offset_bit) & (set_num - 1); //lw
-				judge = insert_cache(cache[index],a[i][k],way);
+				tag = a[i][k] >> (set_bit + offset_bit);
+				judge = insert_cache(cache[index],tag,way);
 				stall += judge ? hit : miss;
 
 				index = (b[k][j] >> offset_bit) & (set_num - 1); //lw
-				judge = insert_cache(cache[index],b[k][j],way);
+				tag = b[k][j] >> (set_bit + offset_bit);
+				judge = insert_cache(cache[index],tag,way);
 				stall += judge ? hit : miss;
 
 				index = (c[i][j] >> offset_bit) & (set_num - 1); //sw
-				judge = insert_cache(cache[index],c[i][j],way);
+				tag = c[i][j] >> (set_bit + offset_bit);
+				judge = insert_cache(cache[index],tag,way);
 				stall += judge ? hit : miss;
 
 				//C[i][j]+=(A[i][k]*B[k][j]);
