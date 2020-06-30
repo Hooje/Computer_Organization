@@ -182,11 +182,11 @@ long long Simulation(int choose)
 	int set_bit = log2(set_num);
 	bool judge;
 	
-	if(choose == 0){
+	/*if(choose == 0){
 	cout << "cache line: " << line << endl;
 	printf("cache_size: %d | set_num: %d | way: %d\n",cache_size,set_num,way);
 	printf("offet_bit: %d | index_bit: %d\n",offset_bit,index_bit);
-	}
+	}*/
 
 	cache_content **cache = new cache_content*[set_num];
 
@@ -210,48 +210,40 @@ long long Simulation(int choose)
 				tag = c[i][j] >> (set_bit + offset_bit);
 				judge = insert_cache(cache[index],tag,way);
 				stall += judge ? hit : miss;
-				if(judge==0)
+				/*if(judge==0)
 					printf("C:(%d,%d,%d)\n",i,j,k);
-				if(judge==false) to_memory++;
+				if(judge==false) to_memory++;*/
 
 				index = (a[i][k] >> offset_bit) & (set_num - 1); //lw
 				tag = a[i][k] >> (set_bit + offset_bit);
 				judge = insert_cache(cache[index],tag,way);
 				stall += judge ? hit : miss;
-				if(judge==0)
+				/*if(judge==0)
 					printf("A:(%d,%d,%d)\n",i,j,k);
-
-				if(judge==false) to_memory++;
+				if(judge==false) to_memory++;*/
 
 				index = (b[k][j] >> offset_bit) & (set_num - 1); //lw
 				tag = b[k][j] >> (set_bit + offset_bit);
 				judge = insert_cache(cache[index],tag,way);
 				stall += judge ? hit : miss;
-				if(judge==0)
+				/*if(judge==0)
 					printf("B:(%d,%d,%d)\n",i,j,k);
-
-				if(judge==false) to_memory++;
+				if(judge==false) to_memory++;*/
 
 				index = (c[i][j] >> offset_bit) & (set_num - 1); //sw
 				tag = c[i][j] >> (set_bit + offset_bit);
 				judge = insert_cache(cache[index],tag,way);
 				stall += judge ? hit : miss;
-				if(judge==0)
+				/*if(judge==0)
 					printf("C:(%d,%d,%d)\n",i,j,k);
-
-				if(judge==false) to_memory++;
+				if(judge==false) to_memory++;*/
 				
 				//C[i][j]+=(A[i][k]*B[k][j]);
 			}
 		}
 	}
 
-	cout << "miss: " << to_memory << endl;
-
-		//cout << hex << x << " ";
-		//index = (x >> offset_bit) & (set_num - 1);
-		//tag = x >> (set_bit + offset_bit);
-		//judge = insert_cache(cache[index], tag, way);
+	//cout << "miss: " << to_memory << endl;
 
 	for(int i=0;i<set_num;i++)
 		delete [] cache[i];
@@ -308,7 +300,7 @@ int main(int argc, char *argv[])
 		}
 	}
 	
-	print();
+	//print();
 
 	programCycles = 2 + 2*(m+1) + m + 2*m*(p+1) + m*p
 									+ 2*(n+1)*m*p + 20*m*n*p + 2*m*p + 2*m + 1;  // add 1 ??
@@ -316,9 +308,23 @@ int main(int argc, char *argv[])
 	oneWordWideCycles = Simulation(0);
 	widerMemoryCycles = Simulation(1);
 	
-	printf("%lld %lld %lld\n", programCycles, oneWordWideCycles, widerMemoryCycles);
+	//printf("%lld %lld %lld\n", programCycles, oneWordWideCycles, widerMemoryCycles);
 
-	
-		
+	FILE *fout = fopen(output,"w");
+
+	for(i=0; i<m; i++){
+		for(j=0; j<p; j++){
+			fprintf(fout,"%d ", C[i][j]);
+		}
+		fprintf(fout,"\n");
+	}
+	fprintf(fout,"%lld %lld %lld %lld\n",
+					programCycles,
+					oneWordWideCycles,
+					widerMemoryCycles,
+					twoLevelMemoryCycles);
+
+	fclose(fout);
+
 	return 0;
 }
