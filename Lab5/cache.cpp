@@ -153,7 +153,155 @@ bool insert_cache(cache_content *set, long long tag, int way)
 	}
 
 }
+long long twolevel()
+{
+	long long stall = 0;
 
+	int hit1 = 1 + 1 + 1;
+	int hit2 = 1 + 4*(1+10+1+1) + 1 +1;
+	int miss = 1+32*(1+100+1+10)+4*(1+10+1+1)+1+1 ;
+	int to_memory = 0;
+
+	int cache_size1 = 128;
+	int cache_size2 = 1024*4;
+	int block_size1 = 16;	// 4 words
+	int block_size2	= 32*4;
+	int way = 8; // 8-way set-associative caches
+	int i, j, k;
+
+	long long tag, index;
+	
+	int offset_bit1 = (int)log2(block_size1);
+	int index_bit1 = (int)log2(cache_size1 / block_size1);	
+	int offset_bit2 = (int)log2(block_size2);
+	int index_bit2 = (int)log2(cache_size2 / block_size2);	
+	int line1 = cache_size1 >> (offset_bit1);							//line is number of blocks
+	int line2 = cache_size2 >> (offset_bit2);							//line is number of blocks
+	
+	int set_num1 = line1 / way;
+	int set_num2 = line2 / way;
+	int set_bit1 = log2(set_num1);
+	int set_bit2 = log2(set_num2);
+	bool judge;
+	
+	/*if(choose == 0){
+	cout << "cache line: " << line << endl;
+	printf("cache_size: %d | set_num: %d | way: %d\n",cache_size,set_num,way);
+	printf("offet_bit: %d | index_bit: %d\n",offset_bit,index_bit);
+	}*/
+
+	cache_content **cache1 = new cache_content*[set_num1];
+
+	cache_content **cache2 = new cache_content*[set_num2];
+
+	for(int i=0;i<set_num1;i++)
+	{
+		cache1[i]=new cache_content[way];
+		for(int j=0;j<way;j++)
+		{
+			cache1[i][j].v=0;
+		}
+	}
+	for(int i=0;i<set_num2;i++)
+	{
+		cache2[i]=new cache_content[way];
+		for(int j=0;j<way;j++)
+		{
+			cache2[i][j].v=0;
+		}
+	}
+
+	//multiplication simulation
+	for (i = 0; i < m; ++i)
+	{
+		for (j = 0; j < p; ++j)
+		{
+			for (k = 0; k < n; ++k)
+			{
+				index = (c[i][j] >> offset_bit1) & (set_num1 - 1); //lw
+				tag = c[i][j] >> (set_bit1 + offset_bit1);
+				judge = insert_cache(cache1[index],tag,way);
+				if (judge)
+				{
+					stall+=hit1;
+				}
+				else
+				{
+					index = (c[i][j] >> offset_bit2) & (set_num2 - 1); //lw
+					tag = c[i][j] >> (set_bit2 + offset_bit2);
+					judge = insert_cache(cache2[index],tag,way);
+					stall+= judge? hit2: miss;
+				}
+				/*if(judge==0)
+					printf("C:(%d,%d,%d)\n",i,j,k);
+				if(judge==false) to_memory++;*/
+
+				index = (a[i][j] >> offset_bit1) & (set_num1 - 1); //lw
+				tag = a[i][j] >> (set_bit1 + offset_bit1);
+				judge = insert_cache(cache1[index],tag,way);
+				if (judge)
+				{
+					stall+=hit1;
+				}
+				else
+				{					
+					index = (a[i][j] >> offset_bit2) & (set_num2 - 1); //lw
+					tag = a[i][j] >> (set_bit2 + offset_bit2);
+					judge = insert_cache(cache2[index],tag,way);
+					stall+= judge? hit2: miss;
+				}
+				/*if(judge==0)
+					printf("A:(%d,%d,%d)\n",i,j,k);
+				if(judge==false) to_memory++;*/
+
+				index = (b[i][j] >> offset_bit1) & (set_num1 - 1); //lw
+				tag = b[i][j] >> (set_bit1 + offset_bit1);
+				judge = insert_cache(cache1[index],tag,way);
+				if (judge)
+				{
+					stall+=hit1;
+				}
+				else
+				{
+					index = (b[i][j] >> offset_bit2) & (set_num2 - 1); //lw
+					tag = b[i][j] >> (set_bit2 + offset_bit2);
+					judge = insert_cache(cache2[index],tag,way);
+					stall+= judge? hit2: miss;
+				}
+				/*if(judge==0)
+					printf("B:(%d,%d,%d)\n",i,j,k);
+				if(judge==false) to_memory++;*/
+
+				index = (c[i][j] >> offset_bit1) & (set_num1 - 1); //lw
+				tag = c[i][j] >> (set_bit1 + offset_bit1);
+				judge = insert_cache(cache1[index],tag,way);
+				if (judge)
+				{
+					stall+=hit1;
+				}
+				else
+				{
+
+					index = (c[i][j] >> offset_bit2) & (set_num2 - 1); //lw
+					tag = c[i][j] >> (set_bit2 + offset_bit2);
+					judge = insert_cache(cache2[index],tag,way);
+					stall+= judge? hit2: miss;
+				}
+				/*if(judge==0)
+					printf("C:(%d,%d,%d)\n",i,j,k);
+				if(judge==false) to_memory++;*/
+				
+				//C[i][j]+=(A[i][k]*B[k][j]);
+			}
+		}
+	}
+
+	//cout << "miss: " << to_memory << endl;
+
+
+	return stall;
+
+}
 
 long long Simulation(int choose)
 {
@@ -269,7 +417,7 @@ int main(int argc, char *argv[])
 	FILE *fp = fopen(input, "r");		// read file
 	fscanf(fp, "%llx %llx %llx", &address_A, &address_B, &address_C);
 	fscanf(fp, "%d %d %d", &m, &n, &p);
-	
+
 	for(i = 0; i < m; i++){
 		for(j = 0; j < n; j++){
 			fscanf(fp, "%d", &A[i][j]);
@@ -307,7 +455,7 @@ int main(int argc, char *argv[])
 
 	oneWordWideCycles = Simulation(0);
 	widerMemoryCycles = Simulation(1);
-	
+	//twoLevelMemoryCycles = twolevel();
 	//printf("%lld %lld %lld\n", programCycles, oneWordWideCycles, widerMemoryCycles);
 
 	FILE *fout = fopen(output,"w");
@@ -327,4 +475,5 @@ int main(int argc, char *argv[])
 	fclose(fout);
 
 	return 0;
+
 }
