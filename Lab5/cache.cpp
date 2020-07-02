@@ -236,8 +236,8 @@ long long twolevel()
 					printf("C:(%d,%d,%d)\n",i,j,k);
 				if(judge==false) to_memory++;*/
 
-				index = (a[i][j] >> offset_bit1) & (set_num1 - 1); //lw
-				tag = a[i][j] >> (set_bit1 + offset_bit1);
+				index = (a[i][k] >> offset_bit1) & (set_num1 - 1); //lw
+				tag = a[i][k] >> (set_bit1 + offset_bit1);
 				judge = insert_cache(cache1[index],tag,way);
 				if (judge)
 				{
@@ -245,8 +245,8 @@ long long twolevel()
 				}
 				else
 				{					
-					index = (a[i][j] >> offset_bit2) & (set_num2 - 1); //lw
-					tag = a[i][j] >> (set_bit2 + offset_bit2);
+					index = (a[i][k] >> offset_bit2) & (set_num2 - 1); //lw
+					tag = a[i][k] >> (set_bit2 + offset_bit2);
 					judge = insert_cache(cache2[index],tag,way);
 					stall+= judge? hit2: miss;
 				}
@@ -254,8 +254,8 @@ long long twolevel()
 					printf("A:(%d,%d,%d)\n",i,j,k);
 				if(judge==false) to_memory++;*/
 
-				index = (b[i][j] >> offset_bit1) & (set_num1 - 1); //lw
-				tag = b[i][j] >> (set_bit1 + offset_bit1);
+				index = (b[k][j] >> offset_bit1) & (set_num1 - 1); //lw
+				tag = b[k][j] >> (set_bit1 + offset_bit1);
 				judge = insert_cache(cache1[index],tag,way);
 				if (judge)
 				{
@@ -263,8 +263,8 @@ long long twolevel()
 				}
 				else
 				{
-					index = (b[i][j] >> offset_bit2) & (set_num2 - 1); //lw
-					tag = b[i][j] >> (set_bit2 + offset_bit2);
+					index = (b[k][j] >> offset_bit2) & (set_num2 - 1); //lw
+					tag = b[k][j] >> (set_bit2 + offset_bit2);
 					judge = insert_cache(cache2[index],tag,way);
 					stall+= judge? hit2: miss;
 				}
@@ -455,6 +455,7 @@ int main(int argc, char *argv[])
 
 	oneWordWideCycles = Simulation(0);
 	widerMemoryCycles = Simulation(1);
+	twoLevelMemoryCycles = twolevel();
 	//twoLevelMemoryCycles = twolevel();
 	//printf("%lld %lld %lld\n", programCycles, oneWordWideCycles, widerMemoryCycles);
 
